@@ -19,14 +19,12 @@ struct Node {
 // Comparador para el priority_queue
 class CompareNodes {
 public:
-
     std::unordered_map<char, std::string> getCodes() const;
     std::string encode(const std::string& text) const;
     std::string decode(const std::string& encodedText) const;
     bool operator()(const std::shared_ptr<Node>& lhs, const std::shared_ptr<Node>& rhs) const {
         return lhs->frequency > rhs->frequency;
-    }
-    
+    } 
 };
 
 // Clase del árbol de Huffman
