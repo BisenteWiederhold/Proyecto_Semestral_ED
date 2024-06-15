@@ -1,47 +1,60 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <unordered_map>
 #include "huffman.h"
-#include "lz.h"
 #include "performance.h"
+#include "lz.cpp"
 
 int main() {
-    std::string text = "tangananica-tanganana";
+    // Leer el archivo de entrada
+    std::ifstream inputFile("input.txt");
+    if (!inputFile) {
+        std::cerr << "Error: Could not open input file." << std::endl;
+        return 1;
+    }
 
-    // Huffman Coding
-    auto start = Performance::now();
-    std::unordered_map<char, std::string> huffmanCode = buildHuffmanTree(text);
-    std::string huffmanEncoded = huffmanEncode(text, huffmanCode);
-    auto end = Performance::now();
-    auto huffmanEncodeTime = Performance::duration(start, end);
+    std::stringstream buffer;
+    buffer << inputFile.rdbuf();
+    std::string text = buffer.str();
 
-    start = Performance::now();
-    std::string huffmanDecoded = huffmanDecode(huffmanEncoded, huffmanCode);
-    end = Performance::now();
-    auto huffmanDecodeTime = Performance::duration(start, end);
+    // Crear el árbol de Huffman
+    HuffmanTree huffmanTree(text);
+    std::unordered_map<char, std::string> huffmanCodes = huffmanTree.getCodes();
 
-    std::cout << "Huffman Encoded: " << huffmanEncoded << std::endl;
-    std::cout << "Huffman Decoded: " << huffmanDecoded << std::endl;
-    std::cout << "Huffman Encode Time: " << huffmanEncodeTime << " ms" << std::endl;
-    std::cout << "Huffman Decode Time: " << huffmanDecodeTime << " ms" << std::endl;
+    // Codificar el texto usando el árbol de Huffman
+    std::string encodedText = huffmanTree.encode(text);
 
-    // LZ Compression
-    start = Performance::now();
-    std::vector<LZPair> lzCompressed = lzCompress(text);
-    end = Performance::now();
-    auto lzCompressTime = Performance::duration(start, end);
+    // Comprimir el texto usando LZ
+    std::vector<std::pair<std::string, int>> compressed = lzCompress(encodedText);
 
-    start = Performance::now();
-    std::string lzDecompressed = lzDecompress(lzCompressed);
-    end = Performance::now();
-    auto lzDecompressTime = Performance::duration(start, end);
+    // Mostrar las estadísticas de rendimiento
+    PerformanceStats stats;
+    stats.measureExecutionTime([&](){ huffmanTree.encode(text); }, "Huffman Encoding Time");
+    stats.measureExecutionTime([&](){ huffmanTree.decode(encodedText); }, "Huffman Decoding Time");
+    stats.measureExecutionTime([&](){ lzCompress(encodedText); }, "LZ Compression Time");
+    stats.measureExecutionTime([&](){ lzDecompress(compressed); }, "LZ Decompression Time");
+    stats.measureSizeInBytes(encodedText, "Huffman Encoded Size");
+    stats.measureSizeInBytes(compressed, "LZ Compressed Size");
 
-    std::cout << "LZ Compressed: ";
-    for (const auto& pair : lzCompressed) {
-        std::cout << "(" << pair.pos << ", " << pair.len << ", " << pair.nextChar << ") ";
+    stats.printStats();
+
+    // Compilar pares de codificación y decodificación
+    std::cout << "Encoded-Decoded Pairs:" << std::endl;
+    for (size_t i = 0; i < text.size(); ++i) {
+        std::cout << "(" << text[i] << ", " << encodedText[i] << ") ";
     }
     std::cout << std::endl;
-    std::cout << "LZ Decompressed: " << lzDecompressed << std::endl;
-    std::cout << "LZ Compress Time: " << lzCompressTime << " ms" << std::endl;
-    std::cout << "LZ Decompress Time: " << lzDecompressTime << " ms" << std::endl;
+
+    // Decodificar el texto usando el árbol de Huffman
+    std::string decodedText = huffmanTree.decode(encodedText);
+
+    // Mostrar los pares "Original-Decoded"
+    std::cout << "Original-Decoded Pairs:" << std::endl;
+    for (size_t i = 0; i < text.size(); ++i) {
+        std::cout << "(" << text[i] << ", " << decodedText[i] << ") ";
+    }
+    std::cout << std::endl;
 
     return 0;
 }

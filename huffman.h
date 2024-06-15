@@ -2,101 +2,51 @@
 #define HUFFMAN_H
 
 #include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+#include <queue>
+#include <vector>
+#include <memory>
 
-// Estructura para el nodo del árbol de Huffman
-struct HuffmanNode {
-    char data;
+// Nodo del árbol de Huffman
+struct Node {
+    char symbol;
     int frequency;
-    HuffmanNode *left, *right;
-
-    HuffmanNode(char data, int frequency) {
-        left = right = nullptr;
-        this->data = data;
-        this->frequency = frequency;
-    }
+    std::shared_ptr<Node> left;
+    std::shared_ptr<Node> right;
 };
 
-// Comparador para la cola de prioridad
-struct compare {
-    bool operator()(HuffmanNode* l, HuffmanNode* r) {
-        return (l->frequency > r->frequency);
+// Comparador para el priority_queue
+class CompareNodes {
+public:
+
+    std::unordered_map<char, std::string> getCodes() const;
+    std::string encode(const std::string& text) const;
+    std::string decode(const std::string& encodedText) const;
+    bool operator()(const std::shared_ptr<Node>& lhs, const std::shared_ptr<Node>& rhs) const {
+        return lhs->frequency > rhs->frequency;
     }
+    
 };
 
-// Función para imprimir los códigos de Huffman
-void printCodes(struct HuffmanNode* root, std::string str, std::unordered_map<char, std::string>& huffmanCode) {
-    if (!root)
-        return;
+// Clase del árbol de Huffman
+class HuffmanTree {
+public:
+    HuffmanTree(const std::string& text);
 
-    if (root->data != '$')
-        huffmanCode[root->data] = str;
+    std::unordered_map<char, std::string> getCodes() const;
 
-    printCodes(root->left, str + "0", huffmanCode);
-    printCodes(root->right, str + "1", huffmanCode);
-}
+    std::string encode(const std::string& text) const;
 
-// Construcción del árbol de Huffman y generación de códigos
-std::unordered_map<char, std::string> buildHuffmanTree(const std::string& text) {
-    std::unordered_map<char, int> freq;
-    for (char ch : text) {
-        freq[ch]++;
-    }
+    std::string decode(const std::string& encodedText) const;
 
-    std::priority_queue<HuffmanNode*, std::vector<HuffmanNode*>, compare> minHeap;
+private:
+    std::shared_ptr<Node> root;
+    std::unordered_map<char, std::string> codes;
 
-    for (auto pair : freq) {
-        minHeap.push(new HuffmanNode(pair.first, pair.second));
-    }
+    void buildTree(const std::string& text);
 
-    while (minHeap.size() != 1) {
-        HuffmanNode *left = minHeap.top(); minHeap.pop();
-        HuffmanNode *right = minHeap.top(); minHeap.pop();
-
-        int sum = left->frequency + right->frequency;
-        HuffmanNode *top = new HuffmanNode('$', sum);
-        top->left = left;
-        top->right = right;
-
-        minHeap.push(top);
-    }
-
-    std::unordered_map<char, std::string> huffmanCode;
-    printCodes(minHeap.top(), "", huffmanCode);
-
-    return huffmanCode;
-}
-
-// Codificación de Huffman
-std::string huffmanEncode(const std::string& text, std::unordered_map<char, std::string>& huffmanCode) {
-    std::string encodedString = "";
-    for (char ch : text) {
-        encodedString += huffmanCode[ch];
-    }
-    return encodedString;
-}
-
-// Decodificación de Huffman
-std::string huffmanDecode(const std::string& encodedString, std::unordered_map<char, std::string>& huffmanCode) {
-    std::string decodedString = "";
-    std::string currentCode = "";
-    std::unordered_map<std::string, char> reverseHuffmanCode;
-    for (auto pair : huffmanCode) {
-        reverseHuffmanCode[pair.second] = pair.first;
-    }
-
-    for (char bit : encodedString) {
-        currentCode += bit;
-        if (reverseHuffmanCode.find(currentCode) != reverseHuffmanCode.end()) {
-            decodedString += reverseHuffmanCode[currentCode];
-            currentCode = "";
-        }
-    }
-
-    return decodedString;
-}
+    void buildCodes(std::shared_ptr<Node> node, const std::string& code);
+};
 
 #endif // HUFFMAN_H
