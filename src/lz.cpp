@@ -1,59 +1,44 @@
-#include "lz.h"
+#include <string>
+#include <vector>
 #include <unordered_map>
-#include <sstream>
 
-std::vector<std::pair<std::string, int>> lzCompress(const std::string& input) {
-    std::vector<std::pair<std::string, int>> compressed;
+std::vector<std::pair<int, int>> lzCompress(const std::string &input) {
     std::unordered_map<std::string, int> dictionary;
-    int dictSize = 1;
-
-    std::string w;
-    for (char c : input) {
-        std::string wc = w + c;
-        if (dictionary.find(wc) != dictionary.end()) {
-            w = wc;
-        } else {
-            compressed.push_back({w.empty() ? std::string(1, c) : w, dictionary[w]});
-            dictionary[wc] = dictSize++;
-            w = c;
+    std::vector<std::pair<int, int>> result;
+    std::string buffer;
+    
+    for (size_t i = 0; i < input.length(); ++i) {
+        buffer += input[i];
+        if (dictionary.find(buffer) == dictionary.end()) {
+            if (buffer.length() > 1) {
+                std::string prefix = buffer.substr(0, buffer.length() - 1);
+                result.push_back({dictionary[prefix], static_cast<int>(buffer.length() - 1)});
+                dictionary[buffer] = i - buffer.length() + 1;
+                buffer = buffer.substr(buffer.length() - 1);
+            }
+            dictionary[buffer] = i - buffer.length() + 1;
+            result.push_back({buffer[0], 0});
+            buffer.clear();
         }
     }
-
-    if (!w.empty()) {
-        compressed.push_back({w, dictionary[w]});
+    
+    if (!buffer.empty()) {
+        result.push_back({dictionary[buffer], static_cast<int>(buffer.length())});
     }
-
-    return compressed;
+    
+    return result;
 }
 
-std::string lzDecompress(const std::vector<std::pair<std::string, int>>& compressed) {
-    if (compressed.empty()) {
-        return "";
-    }
-
-    std::unordered_map<int, std::string> dictionary;
-    int dictSize = 0; // Cambiamos a 0 para que coincida con los índices de compressed
-
-    std::stringstream decompressed;
-    std::string w;
-
-    for (const auto& pair : compressed) {
-        std::string entry;
+std::string lzDecompress(const std::vector<std::pair<int, int>> &compressed) {
+    std::string result;
+    
+    for (const auto &pair : compressed) {
         if (pair.second == 0) {
-            entry = pair.first;
-        } else if (dictionary.find(pair.second) != dictionary.end()) {
-            entry = dictionary[pair.second];
+            result += static_cast<char>(pair.first);
         } else {
-            // Si no se encuentra en el diccionario, se añade una nueva entrada
-            entry = w + w[0];
-        }
-
-        decompressed << entry;
-
-        if (!entry.empty()) {
-            dictionary[++dictSize] = entry + entry[0]; // Usamos dictSize+1 para la siguiente entrada
+            result += result.substr(pair.first, pair.second);
         }
     }
-
-    return decompressed.str();
+    
+    return result;
 }

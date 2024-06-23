@@ -1,10 +1,58 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <unordered_map>
+#include <chrono>
+#include <sys/resource.h>
 #include "huffman.h"
-#include "performance.h"
 #include "lz.cpp"
+
+// Función para obtener el tamaño de la memoria utilizada en bytes
+size_t getMemoryUsage() {
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    return usage.ru_maxrss;
+}
+
+void runExperiments(const std::string& text) {
+    using namespace std::chrono;
+
+    // Medir el tiempo y el tamaño de Huffman Encoding
+    auto start = high_resolution_clock::now();
+    HuffmanTree huffmanTree(text);
+    std::string huffmanEncoded = huffmanTree.encode(text);
+    std::string huffmanDecoded = huffmanTree.decode(huffmanEncoded);
+    auto end = high_resolution_clock::now();
+    size_t huffmanMemoryUsage = getMemoryUsage();
+    auto huffmanDuration = duration_cast<microseconds>(end - start).count();
+
+    std::cout << "Huffman Encoded: " << huffmanEncoded << std::endl;
+    std::cout << "Huffman Decoded: " << huffmanDecoded << std::endl;
+    std::cout << "Huffman Encoding successful: " << (text == huffmanDecoded ? "Yes" : "No") << std::endl;
+    std::cout << "Huffman Encoding time: " << huffmanDuration << " microseconds" << std::endl;
+    std::cout << "Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
+
+    // Medir el tiempo y el tamaño de LZ Compression
+    start = high_resolution_clock::now();
+    std::vector<std::pair<int, int>> lzCompressed = lzCompress(text);
+    std::string lzDecompressed = lzDecompress(lzCompressed);
+    end = high_resolution_clock::now();
+    size_t lzMemoryUsage = getMemoryUsage();
+    auto lzDuration = duration_cast<microseconds>(end - start).count();
+
+    std::cout << "LZ Compressed: ";
+    for (const auto& pair : lzCompressed) {
+        if (pair.second == 0) {
+            std::cout << "(" << static_cast<char>(pair.first) << ", " << pair.second << ") ";
+        } else {
+            std::cout << "(" << pair.first << ", " << pair.second << ") ";
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "LZ Decompressed: " << lzDecompressed << std::endl;
+    std::cout << "LZ Compression successful: " << (text == lzDecompressed ? "Yes" : "No") << std::endl;
+    std::cout << "LZ Compression time: " << lzDuration << " microseconds" << std::endl;
+    std::cout << "LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
+}
 
 int main() {
     // Leer el archivo de entrada
@@ -18,43 +66,8 @@ int main() {
     buffer << inputFile.rdbuf();
     std::string text = buffer.str();
 
-    // Crear el árbol de Huffman
-    HuffmanTree huffmanTree(text);
-    std::unordered_map<char, std::string> huffmanCodes = huffmanTree.getCodes();
-
-    // Codificar el texto usando el árbol de Huffman
-    std::string encodedText = huffmanTree.encode(text);
-
-    // Comprimir el texto usando LZ
-    std::vector<std::pair<std::string, int>> compressed = lzCompress(encodedText);
-
-    // Mostrar las estadísticas de rendimiento
-    PerformanceStats stats;
-    stats.measureExecutionTime([&](){ huffmanTree.encode(text); }, "Huffman Encoding Time");
-    stats.measureExecutionTime([&](){ huffmanTree.decode(encodedText); }, "Huffman Decoding Time");
-    stats.measureExecutionTime([&](){ lzCompress(encodedText); }, "LZ Compression Time");
-    stats.measureExecutionTime([&](){ lzDecompress(compressed); }, "LZ Decompression Time");
-    stats.measureSizeInBytes(encodedText, "Huffman Encoded Size");
-    stats.measureSizeInBytes(compressed, "LZ Compressed Size");
-
-    stats.printStats();
-
-    // Compilar pares de codificación y decodificación
-    std::cout << "Encoded-Decoded Pairs:" << std::endl;
-    for (size_t i = 0; i < text.size(); ++i) {
-        std::cout << "(" << text[i] << ", " << encodedText[i] << ") ";
-    }
-    std::cout << std::endl;
-
-    // Decodificar el texto usando el árbol de Huffman
-    std::string decodedText = huffmanTree.decode(encodedText);
-
-    // Mostrar los pares "Original-Decoded"
-    std::cout << "Original-Decoded Pairs:" << std::endl;
-    for (size_t i = 0; i < text.size(); ++i) {
-        std::cout << "(" << text[i] << ", " << decodedText[i] << ") ";
-    }
-    std::cout << std::endl;
+    // Ejecutar experimentos
+    runExperiments(text);
 
     return 0;
 }
