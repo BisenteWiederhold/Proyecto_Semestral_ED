@@ -1,0 +1,39 @@
+input 1: Huffman Encoding time: 38 microseconds
+input 1: Huffman Decoding time: 4 microseconds
+input 1: Huffman Memory usage: 9084 bytes
+input 1: LZ Compression time: 18 microseconds
+input 1: LZ Decompression time: 1 microseconds
+input 1: LZ Memory usage: 9084 bytes
+input2.txt,119,25,9084,61,3,9084
+input3.txt,200,74,9084,122,7,9084
+input4.txt,242,111,9084,221,12,9084
+input5.txt,546,243,9084,417,33,9084
+input2.txt,117,26,9084,61,3,9084
+input3.txt,220,56,9084,118,6,9084
+input4.txt,307,118,9084,237,12,9084
+input5.txt,655,373,9084,590,29,9084
+input.txt,41,3,9084,17,1,9084
+input2.txt,41,4,9084,19,1,9084
+input3.txt,44,4,9084,18,1,9084
+input4.txt,38,5,9084,17,0,9084
+input5.txt,42,3,9084,13,1,9084
+input.txt,42,3,9084,16,1,9084
+input2.txt,34,5,9084,19,1,9084
+input3.txt,32,3,9084,20,1,9084
+input4.txt,48,3,9084,13,0,9084
+input5.txt,37,4,9084,14,0,9084
+input.txt,42,3,9088,17,1,9088
+input2.txt,143,37,9088,66,3,9088
+input3.txt,174,57,9088,115,6,9088
+input4.txt,253,113,9088,205,12,9088
+input5.txt,603,241,9088,396,27,9088
+input.txt,56,5,9092,23,1,9092
+input2.txt,147,38,9092,87,5,9092
+input3.txt,173,57,9092,116,6,9092
+input4.txt,317,115,9092,236,17,9092
+input5.txt,661,248,9092,413,36,9092
+input.txt,42,3,9092,17,1,9092
+input2.txt,137,38,9092,62,3,9092
+input3.txt,177,60,9092,114,6,9092
+input4.txt,267,118,9092,203,12,9092
+input5.txt,536,251,9092,481,29,9092
