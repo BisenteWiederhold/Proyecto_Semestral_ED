@@ -1,0 +1,6 @@
+Huffman Encoding successful: Yes
+Huffman Encoding time: 47 microseconds
+Huffman Memory usage: 9004 bytes
+LZ Compression successful: No
+LZ Compression time: 25 microseconds
+LZ Memory usage: 9004 bytes

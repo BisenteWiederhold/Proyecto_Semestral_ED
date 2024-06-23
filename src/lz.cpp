@@ -31,14 +31,21 @@ std::vector<std::pair<int, int>> lzCompress(const std::string &input) {
 
 std::string lzDecompress(const std::vector<std::pair<int, int>> &compressed) {
     std::string result;
-    
+    std::string input; // Necesitamos el input original para decodificar
+    int currentIndex = 0; // Índice para seguir la posición en el input original
+
     for (const auto &pair : compressed) {
         if (pair.second == 0) {
-            result += static_cast<char>(pair.first);
+            result += input[pair.first]; // Agrega el caracter del input original
+            input += input[pair.first]; // Agrega el caracter al input
+            currentIndex++;
         } else {
-            result += result.substr(pair.first, pair.second);
+            std::string substring = input.substr(pair.first, pair.second); // Obtiene el substring del input original
+            result += substring; // Agrega el substring al resultado
+            input += substring; // Agrega el substring al input
+            currentIndex += pair.second;
         }
     }
-    
+
     return result;
 }

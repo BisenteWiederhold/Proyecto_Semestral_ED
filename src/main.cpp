@@ -27,9 +27,6 @@ void runExperiments(const std::string& text) {
 
     std::cout << "Huffman Encoded: " << huffmanEncoded << std::endl;
     std::cout << "Huffman Decoded: " << huffmanDecoded << std::endl;
-    std::cout << "Huffman Encoding successful: " << (text == huffmanDecoded ? "Yes" : "No") << std::endl;
-    std::cout << "Huffman Encoding time: " << huffmanDuration << " microseconds" << std::endl;
-    std::cout << "Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
 
     // Medir el tiempo y el tamaño de LZ Compression
     start = high_resolution_clock::now();
@@ -49,9 +46,22 @@ void runExperiments(const std::string& text) {
     }
     std::cout << std::endl;
     std::cout << "LZ Decompressed: " << lzDecompressed << std::endl;
-    std::cout << "LZ Compression successful: " << (text == lzDecompressed ? "Yes" : "No") << std::endl;
-    std::cout << "LZ Compression time: " << lzDuration << " microseconds" << std::endl;
-    std::cout << "LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
+
+    // Guardar resultados en el archivo "experimentacion.txt"
+    std::ofstream outputFile("experimentacion.txt");
+    if (!outputFile) {
+        std::cerr << "Error: Could not open output file." << std::endl;
+        return;
+    }
+
+    outputFile << "Huffman Encoding successful: " << (text == huffmanDecoded ? "Yes" : "No") << std::endl;
+    outputFile << "Huffman Encoding time: " << huffmanDuration << " microseconds" << std::endl;
+    outputFile << "Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
+    outputFile << "LZ Compression successful: " << (text == lzDecompressed ? "Yes" : "No") << std::endl;
+    outputFile << "LZ Compression time: " << lzDuration << " microseconds" << std::endl;
+    outputFile << "LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
+
+    outputFile.close();
 }
 
 int main() {
