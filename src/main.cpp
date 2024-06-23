@@ -30,8 +30,6 @@ void runExperiments(const std::string& text) {
     size_t huffmanMemoryUsage = getMemoryUsage();
     auto huffmanDurationDes = duration_cast<microseconds>(end - start).count();
 
-    std::cout << "Huffman Encoded: " << huffmanEncoded << std::endl;
-    std::cout << "Huffman Decoded: " << huffmanDecoded << std::endl;
 
     // Medir el tiempo y el tamaÃ±o de LZ Compression
     start = high_resolution_clock::now();
@@ -45,7 +43,6 @@ void runExperiments(const std::string& text) {
     size_t lzMemoryUsage = getMemoryUsage();
     auto lzDurationDes = duration_cast<microseconds>(end - start).count();
 
-    std::cout << "LZ Compressed: ";
     for (const auto& pair : lzCompressed) {
         if (pair.second == 0) {
             std::cout << "(" << static_cast<char>(pair.first) << ", " << pair.second << ") ";
@@ -54,7 +51,6 @@ void runExperiments(const std::string& text) {
         }
     }
     std::cout << std::endl;
-    std::cout << "LZ Decompressed: " << lzDecompressed << std::endl;
 
     // Guardar resultados en el archivo "experimentacion.txt"
     std::ofstream outputFile("experimentacion.csv");
@@ -62,12 +58,12 @@ void runExperiments(const std::string& text) {
         std::cerr << "Error: Could not open output file." << std::endl;
         return;
     }
-    outputFile << "input 1: Huffman Encoding time: " << huffmanDurationCo << " microseconds" << std::endl;
-    outputFile << "input 1: Huffman Decoding time: " << huffmanDurationDes << " microseconds" << std::endl;
-    outputFile << "input 1: Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
-    outputFile << "input 1: LZ Compression time: " << lzDurationCo << " microseconds" << std::endl;
-    outputFile << "input 1: LZ Decompression time: " << lzDurationDes << " microseconds" << std::endl;
-    outputFile << "input 1: LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
+    std::cout << "input 1: Huffman Encoding time: " << huffmanDurationCo << " microseconds" << std::endl;
+    std::cout << "input 1: Huffman Decoding time: " << huffmanDurationDes << " microseconds" << std::endl;
+    std::cout << "input 1: Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
+    std::cout << "input 1: LZ Compression time: " << lzDurationCo << " microseconds" << std::endl;
+    std::cout << "input 1: LZ Decompression time: " << lzDurationDes << " microseconds" << std::endl;
+    std::cout << "input 1: LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
 
     outputFile.close();
 }
