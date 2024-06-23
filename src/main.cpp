@@ -42,6 +42,8 @@ void runExperiments(const std::string& inputFile, const std::string& outputFile)
     auto huffmanDurationDes = duration_cast<microseconds>(end - start).count();
 
     // Medir el tiempo y el tamaño de LZ Compression
+
+    // Medir el tiempo y el tamaÃ±o de LZ Compression
     start = high_resolution_clock::now();
     std::vector<std::pair<int, int>> lzCompressed = lzCompress(text);
     end = high_resolution_clock::now();
@@ -83,6 +85,12 @@ void runExperiments(const std::string& inputFile, const std::string& outputFile)
 
     output << inputFile << "," << huffmanDurationCo << "," << huffmanDurationDes << "," << huffmanMemoryUsage << ","
            << lzDurationCo << "," << lzDurationDes << "," << lzMemoryUsage << std::endl;
+    std::cout << "input 1: Huffman Encoding time: " << huffmanDurationCo << " microseconds" << std::endl;
+    std::cout << "input 1: Huffman Decoding time: " << huffmanDurationDes << " microseconds" << std::endl;
+    std::cout << "input 1: Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
+    std::cout << "input 1: LZ Compression time: " << lzDurationCo << " microseconds" << std::endl;
+    std::cout << "input 1: LZ Decompression time: " << lzDurationDes << " microseconds" << std::endl;
+    std::cout << "input 1: LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
 
     output.close();
 }
