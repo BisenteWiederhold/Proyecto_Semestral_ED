@@ -4,8 +4,9 @@
 #include <chrono>
 #include <unistd.h>
 #include <sys/resource.h>
-#include "huffman.h"
+#include <bitset>
 #include "lz.cpp"
+#include "huffman.h"
 
 // Función para obtener el tamaño de la memoria utilizada en bytes en Linux
 size_t getMemoryUsage() {
@@ -30,22 +31,25 @@ void runExperiments(const std::string& inputFile, const std::string& outputFile)
 
     // Medir el tiempo y el tamaño de Huffman Encoding
     auto start = high_resolution_clock::now();
-    HuffmanTree huffmanTree(text);
-    std::string huffmanEncoded = huffmanTree.encode(text);
+    createTree(text);
     auto end = high_resolution_clock::now();
+
+    // Aquí puedes hacer algo con el árbol creado, como imprimir los códigos Huffman
+
     auto huffmanDurationCo = duration_cast<microseconds>(end - start).count();
 
     start = high_resolution_clock::now();
-    std::string huffmanDecoded = huffmanTree.decode(huffmanEncoded);
+    std::string huffmanEncoded = ""; // Aquí deberías tener la cadena codificada con Huffman
     end = high_resolution_clock::now();
-    size_t huffmanMemoryUsage = getMemoryUsage();
     auto huffmanDurationDes = duration_cast<microseconds>(end - start).count();
 
-    // Medir el tiempo y el tamaño de LZ Compression
+    // Aquí podrías hacer algo con la cadena codificada, como imprimirla
 
-    // Medir el tiempo y el tamaÃ±o de LZ Compression
+    size_t huffmanMemoryUsage = getMemoryUsage();
+
+    // Medir el tiempo y el tamaño de LZ Compression
     start = high_resolution_clock::now();
-    std::vector<std::pair<int, int>> lzCompressed = lzCompress(text);
+    auto lzCompressed = lzCompress(text);
     end = high_resolution_clock::now();
     auto lzDurationCo = duration_cast<microseconds>(end - start).count();
 
@@ -57,15 +61,13 @@ void runExperiments(const std::string& inputFile, const std::string& outputFile)
 
     // Imprimir resultados del Huffman y LZ
     std::cout << "Resultados para " << inputFile << ":" << std::endl;
-    std::cout << "Huffman Encoded: " << huffmanEncoded << std::endl;
-    std::cout << "Huffman Decoded: " << huffmanDecoded << std::endl;
     std::cout << "Huffman Encoding time: " << huffmanDurationCo << " microseconds" << std::endl;
     std::cout << "Huffman Decoding time: " << huffmanDurationDes << " microseconds" << std::endl;
     std::cout << "Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
     std::cout << "LZ Compressed: ";
     for (const auto& pair : lzCompressed) {
         if (pair.second == 0) {
-            std::cout << "(" << static_cast<char>(pair.first) << ", " << pair.second << ") ";
+            std::cout << "(" << static_cast<char>(pair.first) << ", 0) ";
         } else {
             std::cout << "(" << pair.first << ", " << pair.second << ") ";
         }
@@ -85,12 +87,6 @@ void runExperiments(const std::string& inputFile, const std::string& outputFile)
 
     output << inputFile << "," << huffmanDurationCo << "," << huffmanDurationDes << "," << huffmanMemoryUsage << ","
            << lzDurationCo << "," << lzDurationDes << "," << lzMemoryUsage << std::endl;
-    std::cout << "input 1: Huffman Encoding time: " << huffmanDurationCo << " microseconds" << std::endl;
-    std::cout << "input 1: Huffman Decoding time: " << huffmanDurationDes << " microseconds" << std::endl;
-    std::cout << "input 1: Huffman Memory usage: " << huffmanMemoryUsage << " bytes" << std::endl;
-    std::cout << "input 1: LZ Compression time: " << lzDurationCo << " microseconds" << std::endl;
-    std::cout << "input 1: LZ Decompression time: " << lzDurationDes << " microseconds" << std::endl;
-    std::cout << "input 1: LZ Memory usage: " << lzMemoryUsage << " bytes" << std::endl;
 
     output.close();
 }
@@ -104,6 +100,6 @@ int main() {
         std::string inputFile = "input" + std::to_string(i) + ".txt";
         runExperiments(inputFile, "experimentacion.csv");
     }
-
+    
     return 0;
 }
