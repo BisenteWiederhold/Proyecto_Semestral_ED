@@ -1,62 +1,58 @@
-#include <vector>
 #include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
 #include <unordered_map>
-
-
+#include <sstream>
 
 std::vector<std::pair<int, int>> lzCompress(const std::string &input) {
     std::unordered_map<std::string, int> dictionary;
     std::vector<std::pair<int, int>> result;
     std::string buffer;
-
-    int position = 0;
-    for (char c : input) {
-        std::string current = buffer + c;
-        if (dictionary.find(current) != dictionary.end()) {
-            buffer = current;
-        } else {
-            if (!buffer.empty()) {
-                if (dictionary.find(buffer) == dictionary.end()) {
-                    dictionary[buffer] = dictionary.size();
-                }
-                result.push_back({dictionary[buffer], static_cast<int>(buffer.length())});
-                buffer.clear();
-            } else {
-                result.push_back({static_cast<int>(c), 0});
+    
+    for (size_t i = 0; i < input.length(); ++i) {
+        buffer += input[i];
+        if (dictionary.find(buffer) == dictionary.end()) {
+            if (buffer.length() > 1) {
+                std::string prefix = buffer.substr(0, buffer.length() - 1);
+                result.push_back({dictionary[prefix], static_cast<int>(buffer.length() - 1)});
+                dictionary[buffer] = i - buffer.length() + 1;
+                buffer = buffer.substr(buffer.length() - 1);
             }
+            if (dictionary.find(buffer) == dictionary.end()) {
+        	    dictionary[buffer] = i - buffer.length() + 1;
+    	        result.push_back({buffer[0], 0});
+	            buffer.clear();
+			}
         }
-        position++;
     }
-
+    
     if (!buffer.empty()) {
         result.push_back({dictionary[buffer], static_cast<int>(buffer.length())});
     }
-
+    
     return result;
 }
 
-std::string lzDecompress(const std::vector<std::pair<int, int>>& compressed) {
-    std::unordered_map<int, std::string> dictionary;
+std::string lzDecompress(const std::vector<std::pair<int, int>> &compressed) {
     std::string result;
+    std::string input; 
+    int currentIndex = 0; 
 
-    for (int i = 0; i < 256; ++i) {
-        dictionary[i] = std::string(1, static_cast<char>(i));
-    }
-
-    for (const auto& pair : compressed) {
-        std::string entry;
-        if (pair.first < dictionary.size()) {
-            entry = dictionary[pair.first];
+    for (const auto &pair : compressed) {
+        if (pair.second == 0) {
+            result += pair.first; 
+            input += pair.first; 
+            currentIndex++;
         } else {
-            entry = dictionary[pair.first / 256] + dictionary[pair.first % 256][0];
-        }
-
-        result += entry;
-
-        if (dictionary.size() < 4096) {
-            dictionary[dictionary.size()] = dictionary[pair.first / 256] + entry[0];
+            std::string substring = input.substr(pair.first, pair.second); 
+            result += substring; 
+            input += substring; 
+            currentIndex += pair.second;
         }
     }
 
     return result;
+
 }
+
