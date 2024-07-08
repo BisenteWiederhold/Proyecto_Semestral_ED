@@ -2,16 +2,20 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+//almacena los códigos de Huffman y devuelve el "codes"  que contiene los códigos 
 std::unordered_map<char, std::string> HuffmanTree::getCodes() const {
     return codes;
 }
 
+//genera el arbol y genera los códigos de los caracteres desde la raíz del árbol Huffman.
 HuffmanTree::HuffmanTree(const std::string& text) {
 	
     buildTree(text);
     buildCodes(root, "");
 }
 
+//Codifica un texto utilizando los códigos almacenados.
 std::string HuffmanTree::encode(const std::string& text) const {
     std::string encodedText;
     for (char c : text) {
@@ -24,6 +28,7 @@ std::string HuffmanTree::encode(const std::string& text) const {
     return encodedText;
 }
 
+//Vuelve a decodificar en función de cada bit utilizando el árbol de Huffman
 std::string HuffmanTree::decode(const std::string& encodedText) const {
     std::string decodedText;
     std::shared_ptr<Node> current = root;
@@ -42,6 +47,7 @@ std::string HuffmanTree::decode(const std::string& encodedText) const {
     return decodedText;
 }
 
+//Construye el árbol de Huffman en función de las frecuencias de los nodos.
 void HuffmanTree::buildTree(const std::string& text) {
     std::unordered_map<char, int> frequencies;
     for (char c : text) {
@@ -66,6 +72,7 @@ void HuffmanTree::buildTree(const std::string& text) {
     root = pq.top();
 }
 
+//Asigna códigos de Huffman recoriendo el arbol asignado 1 y 0 para marcar el recorido
 void HuffmanTree::buildCodes(std::shared_ptr<Node> node, const std::string& code) {
     if (!node) {
         return;
