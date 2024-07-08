@@ -10,7 +10,7 @@ std::vector<std::pair<int, int>> lzCompress(const std::string &input) {
     std::unordered_map<std::string, int> dictionary;
     std::vector<std::pair<int, int>> result;
     std::string buffer;
-    //Este algoritmo construye un diccionario de secuencia encontradas de secuencia de pares
+    //Este algoritmo construye un diccionario de cadenas encontradas de secuencia de pares
     for (size_t i = 0; i < input.length(); ++i) {
         buffer += input[i];
         if (dictionary.find(buffer) == dictionary.end()) {
