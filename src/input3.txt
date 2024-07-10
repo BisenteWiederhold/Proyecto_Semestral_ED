@@ -1,1 +1,1 @@
-Este código es de largo variable, es decir que los símbolos del mensaje a codificar pueden representarse con una longitud variable de ceros y unos. Para poder distinguir estas representaciones entre sí, es necesario saber cuándo empieza y termina una. 
+Este codigo es de largo variable, es decir que los simbolos del mensaje a codificar pueden representarse con una longitud variable de ceros y unos. Para poder distinguir estas representaciones entre si, es necesario saber cuando empieza y termina una. 
