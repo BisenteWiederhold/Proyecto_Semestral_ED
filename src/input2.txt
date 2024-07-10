@@ -1,1 +1,1 @@
-La codificacion Huffman genera un codigo libre de prefijos binario con longitud de palabra codificada minima. 
+La codificacion Huffman genera un codigo libre de prefijos binario con longitud de palabra codificada minima.
