@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <psapi.h>
 #include "lz.cpp"
-#include "huffman.h"
+#include "huffman.cpp"
 
 // Función para obtener el tamaño de la memoria utilizada en bytes
 size_t getMemoryUsage() {
